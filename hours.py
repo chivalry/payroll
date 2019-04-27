@@ -1,5 +1,9 @@
 #! /usr/bin/env python
 
+__author__ = 'Charles Ross'
+__version__ = '1.0.0'
+__author_email__ = 'chivalry@mac.com'
+
 from datetime import datetime, date
 from calendar import monthrange
 
