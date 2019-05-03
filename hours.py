@@ -12,7 +12,7 @@ import click
 
 MAX_HOURS_PER_WEEK = 30
 MAX_MINUTES_PER_WEEK = 0
-MAX_HOURS_PER_MONTH = 120
+MAX_HOURS_PER_MONTH = 121
 MAX_MINUTES_PER_MONTH = 1
 
 
@@ -40,13 +40,12 @@ def calculate_hours(hours, minutes, month):
 
     mins_per_day = max_month // month_days
     extra_mins = max_month - mins_per_day * month_days
-    skip_days = month_days // extra_mins
 
     dates = [date(year, month, day) for day in range(1, month_days+1)]
     daily_mins = [{'date': date, 'mins': mins_per_day} for date in dates]
 
     for i in range(extra_mins):
-        daily_mins[i * skip_days]['mins'] += 1
+        daily_mins[i]['mins'] += 1
 
     start_week_days = (start_day * -1 - 1) % 7
     mins = [daily_min['mins'] for daily_min in daily_mins]
@@ -62,6 +61,8 @@ def calculate_hours(hours, minutes, month):
     for rec in daily_mins:
         if rec['date'].weekday() == 6:
             click.echo('\n')
+        if rec['date'].day == 16:
+            click.echo('\n\n')
         day = rec['date'].strftime('%a, %b %d').replace(' 0', ' ')
         click.echo('{}: {} hrs, {} mins'.format(day, rec['mins'] // 60, rec['mins'] % 60))
 
