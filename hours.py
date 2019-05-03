@@ -10,14 +10,42 @@ from calendar import monthrange
 import click
 
 
-MAX_HOURS_PER_WEEK = 30
-MAX_MINUTES_PER_WEEK = 0
-MAX_HOURS_PER_MONTH = 120
-MAX_MINUTES_PER_MONTH = 1
+class Time(object):
+    def __init__(self, minutes, hours=None, date=None):
+        self.total_minutes = hours * 60 + minutes if hours else minutes
+
+    @property
+    def minutes(self):
+        return self._total_minutes % 60
+
+    @minutes.setter
+    def minutes(self, minutes):
+        self._total_minutes = minutes
+
+    @property
+    def hours(self):
+        return self._total_minutes // 60
 
 
-def minutes_from_hrs_mins(hrs, mins):
-    return hrs * 60 + mins
+class Month(object):
+    MAX_HOURS_PER_WEEK = 30
+    MAX_MINUTES_PER_WEEK = 0
+    MAX_HOURS_PER_MONTH = 120
+    MAX_MINUTES_PER_MONTH = 1
+
+    def __init__(self, month_number, hours, minutes):
+        today = datetime.today()
+        this_month = today.month
+        self.year = today.year if month_number < this_month else today.year - 1
+        self.start_weekday, self.days = monthrange(year, month)
+
+        self.used_mins = self.mins_from_hrs_mins(hours, minutes)
+
+        self.max_month = self.mins_from_hrs_mins(self.MAX_HOURS_PER_MONTH, MAX_MINUTES_PER_MONTH)
+        self.max_week = self.mins_from_hrs_mins(self.MAX_HOURS_PER_WEEK, MAX_MINUTES_PER_WEEK)
+
+    def mins_from_hrs_mins(hrs, mins):
+        return hrs * 60 + mins
 
 
 @click.command()
@@ -43,6 +71,7 @@ def calculate_hours(hours, minutes, month):
     skip_days = month_days // extra_mins
 
     dates = [date(year, month, day) for day in range(1, month_days+1)]
+    daily_times = [Time(date=date, minutes=mins_per_day) for date in dates]
     daily_mins = [{'date': date, 'mins': mins_per_day} for date in dates]
 
     for i in range(extra_mins):
