@@ -31,7 +31,7 @@ def calculate_hours(hours, minutes, month):
     """Calculate the daily hours given the inputs."""
     today = datetime.today()
     this_month = today.month
-    year = today.year if month < this_month else today.year - 1
+    year = today.year if month <= this_month else today.year - 1
     start_day, month_days = monthrange(year, month)
 
     used_week_mins = minutes_from_hrs_mins(hours, minutes)
